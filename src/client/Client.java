@@ -23,67 +23,59 @@ import java.util.concurrent.Executors;
 import utilities.structs.Pair;
 
 public class Client {
-    public static int MAX_PARALLEL_CLIENTS = 50;
-    private static final int MAX_AVAILABLE_BASH_TASKS = 2;
-    public static ArrayList<ArrayList<String>> resultArray;
-    public static String[] availableTasks;
+        public static int MAX_PARALLEL_CLIENTS = 50;
+        private static final int MAX_AVAILABLE_BASH_TASKS = 2;
+        public static ArrayList<ArrayList<String>> resultArray;
+        public static String[] availableTasks;
     
-    
-    public static void main(String[] args) {
-        initTasks();
-        ArrayList<Pair<String, String>> schedulers = loadSchedulers();
+        public static void main(String[] args) {
+                initTasks();
+                ArrayList<Pair<String, String>> schedulers = loadSchedulers();
 ///////////        int numberOfClientThreads = Integer.parseInt(args[0]);
-        int numberOfClientThreads = 1;
+                int numberOfClientThreads = 1;
         
-        resultArray = new ArrayList<>();
-        for(int i = 0; i<numberOfClientThreads ; i++)
-            resultArray.add(new ArrayList<>());
+                resultArray = new ArrayList<>();
+                for(int i = 0; i<numberOfClientThreads ; i++)
+                        resultArray.add(new ArrayList<>());
         
-        ExecutorService executor = Executors.newFixedThreadPool(MAX_PARALLEL_CLIENTS);
+                ExecutorService executor = Executors.newFixedThreadPool(MAX_PARALLEL_CLIENTS);
 
-        for (int i = 0; i < numberOfClientThreads; i++) {
-            Runnable worker = new ClientThread(schedulers, i);
-            executor.execute(worker);
-          }
+                for (int i = 0; i < numberOfClientThreads; i++) {
+                        Runnable worker = new ClientThread(schedulers, i);
+                        executor.execute(worker);
+                }
 
-        executor.shutdown();
+                executor.shutdown();
 
-        while (!executor.isTerminated()) {
-
-       }
-
-	
-    }    
+                while (!executor.isTerminated()) {}	
+        }    
     
-    private static ArrayList<Pair<String, String>> loadSchedulers(){        
-        ArrayList<Pair<String, String>> schedulers = new ArrayList<>();
+        private static ArrayList<Pair<String, String>> loadSchedulers(){        
+                ArrayList<Pair<String, String>> schedulers = new ArrayList<>();
         
-        Properties prop = new Properties();
+                Properties prop = new Properties();
 	InputStream input = null;
  
 	try {
-                // open available schedulers property file
-		input = new FileInputStream("./config/available_schedulers.properties");
+                        // open available schedulers property file
+                        input = new FileInputStream("./config/available_schedulers.properties");
  
-		// load the properties file properties file
-		prop.load(input);
+                        // load the properties file properties file
+                        prop.load(input);
  
-		// get the property value and print it out
-                int nos = Integer.parseInt(prop.getProperty("numberOfSchedulers"));
-                schedulers.add(new Pair<>(prop.getProperty("scheduler1.hostname"), prop.getProperty("scheduler1.port")));
-                
-
- 
+                        // get the property value and print it out
+                        int nos = Integer.parseInt(prop.getProperty("numberOfSchedulers"));
+                        schedulers.add(new Pair<>(prop.getProperty("scheduler1.hostname"), prop.getProperty("scheduler1.port")));
 	} catch (IOException ex) {
-		ex.printStackTrace();
+                        ex.printStackTrace();
 	} finally {
-		if (input != null) {
-			try {
-				input.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+                        if (input != null) {
+                                try {
+                                        input.close();
+                                } catch (IOException e) {
+                                        e.printStackTrace();
 		}
+                        }
 	}
         
         return schedulers;
