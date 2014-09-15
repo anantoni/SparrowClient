@@ -84,6 +84,6 @@ public class Client {
     private static void initTasks(){
         availableTasks = new String[MAX_AVAILABLE_BASH_TASKS];
         availableTasks[0] = "ls -al";
-        availableTasks[1] = "sleep 20s";
+        availableTasks[1] = "sleep 5s";
     }
 }
