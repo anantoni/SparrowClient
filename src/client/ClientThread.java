@@ -76,83 +76,81 @@ public class ClientThread implements Runnable{
                 //creating jobs for http requests to scheduler
                 int numOfJobs = randInt(MIN_NUM_OF_JOBS, MAX_NUM_OF_JOBS);
                 for(int i = 0; i<numOfJobs;i++)
-                        Client.resultArray.get(this.resultPos).add("RES_INIT");           
+                    Client.resultArray.get(this.resultPos).add("RES_INIT");           
 
                 for(int j=0; j< numOfJobs;j++){
-                        ArrayList<String> job = produceJob();
-                        String jobId = Integer.toString(j);
-                        StringBuilder tasks = new StringBuilder();
-                        StringBuilder taskIds = new StringBuilder();
+                    ArrayList<String> job = produceJob();
+                    String jobId = Integer.toString(j);
+                    StringBuilder tasks = new StringBuilder();
+                    StringBuilder taskIds = new StringBuilder();
 
-                        for(int i =  0; i < job.size(); i++){
-                                if(i != job.size() - 1){
-                                        tasks.append(job.get(i)).append(",");
-                                        taskIds.append(i).append(",");
-                                }
-                                else{
-                                        tasks.append(job.get(i));
-                                        taskIds.append(i);
-                                }
+                    for(int i =  0; i < job.size(); i++){
+                        if(i != job.size() - 1){
+                                tasks.append(job.get(i)).append(",");
+                                taskIds.append(i).append(",");
                         }
-        
-        
-                        //http request     
-                        CloseableHttpClient httpclient = HttpClients.createDefault();
+                        else{
+                                tasks.append(job.get(i));
+                                taskIds.append(i);
+                        }
+                    }
+
+                    //http request     
+                    CloseableHttpClient httpclient = HttpClients.createDefault();
+                    try {
+                        HttpPost httpPost = new HttpPost(schedulerUrl());
+                        List <NameValuePair> nvps = new ArrayList <>();
+                        nvps.add(new BasicNameValuePair("job-id", jobId));
+                        nvps.add(new BasicNameValuePair("task-commands", tasks.toString()));
+                        nvps.add(new BasicNameValuePair("task-ids", taskIds.toString()));
+
+                        httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+                        System.out.println("sending task request");
+                        CloseableHttpResponse response = httpclient.execute(httpPost);
                         try {
-                                HttpPost httpPost = new HttpPost(schedulerUrl());
-                                List <NameValuePair> nvps = new ArrayList <>();
-                                nvps.add(new BasicNameValuePair("job-id", jobId));
-                                nvps.add(new BasicNameValuePair("task-commands", tasks.toString()));
-                                nvps.add(new BasicNameValuePair("task-ids", taskIds.toString()));
+                            System.out.println(response.getStatusLine());
+                            HttpEntity entity2 = response.getEntity();
+                            // do something useful with the response body
+                            // and ensure it is fully consumed
 
-                                httpPost.setEntity(new UrlEncodedFormEntity(nvps));
-                                System.out.println("sending task request");
-                                CloseableHttpResponse response = httpclient.execute(httpPost);
-                                try {
-                                        System.out.println(response.getStatusLine());
-                                        HttpEntity entity2 = response.getEntity();
-                                        // do something useful with the response body
-                                        // and ensure it is fully consumed
-
-                ////////////////////////TODO: add result to Client.resultArray.get(this.resultPos).get(j).set(`result from response message :)) `)//////////////////////
-                                        EntityUtils.consume(entity2);
-                                }   
-                                catch (IOException ex) {
-                                        Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
-                                } 
-                                finally {
-                                        try {
-                                                response.close();
-                                        } 
-                                        catch (IOException ex) {
-                                                Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
-                                        }
-                                }
-
-                            }   
-                            catch (UnsupportedEncodingException ex) {
-                                    Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+                            // TODO: add result to Client.resultArray.get(this.resultPos).get(j).set(`result from response message :)) `)//
+                            EntityUtils.consume(entity2);
+                        }   
+                        catch (IOException ex) {
+                                Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+                        } 
+                        finally {
+                            try {
+                                    response.close();
                             } 
                             catch (IOException ex) {
                                     Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
-                            } 
-                            finally {
-                                try {
-                                    httpclient.close();
-                                } 
-                                catch (IOException ex) {
-                                    Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            }       
-                }
-        
-                //closing socket...
-                try {
-                    socket.close();
-                }
-                catch (IOException e) {
-                    System.out.println(e);
-                }
+                            }
+                        }
+                    }   
+                    catch (UnsupportedEncodingException ex) {
+                            Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+                    } 
+                    catch (IOException ex) {
+                            Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+                    } 
+                    finally {
+                        try {
+                            httpclient.close();
+                        } 
+                        catch (IOException ex) {
+                            Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }       
+            }
+
+            //closing socket...
+            try {
+                socket.close();
+            }
+            catch (IOException e) {
+                System.out.println(e);
+            }
     }
     
     
@@ -184,5 +182,4 @@ public class ClientThread implements Runnable{
         int randomNum = rand.nextInt(max - min) + min;
         return randomNum;
     }
-    
 }
