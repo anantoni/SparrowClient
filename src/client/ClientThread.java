@@ -33,9 +33,9 @@ import utilities.structs.Pair;
 public class ClientThread implements Runnable{
         private static final String DEFAULT_NAME = "CLIENT:";
         private static final int ERROR = 1;
-        private static final int MAX_NUM_OF_TASKS = 10000;
-        private static final int MIN_NUM_OF_TASKS = 100;
-        private static final int MAX_NUM_OF_JOBS = 10;
+        private static final int MAX_NUM_OF_TASKS = 20;
+        private static final int MIN_NUM_OF_TASKS = 10;
+        private static final int MAX_NUM_OF_JOBS = 100;
         private static final int MIN_NUM_OF_JOBS = 1;
 
 
@@ -171,7 +171,8 @@ public class ClientThread implements Runnable{
     private ArrayList<String> produceJob(){
         ArrayList<String> job = new ArrayList<>();
         System.out.println("available tasks length: " + Client.availableTasks.length);
-        for(int i = 0; i < randInt(MIN_NUM_OF_TASKS, MAX_NUM_OF_TASKS); i++)
+        int tasks = randInt(MIN_NUM_OF_TASKS, MAX_NUM_OF_TASKS);
+        for(int i = 0; i < tasks ; i++)
             job.add(Client.availableTasks[randInt(0, Client.availableTasks.length)]);
         
         return job;
