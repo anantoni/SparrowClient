@@ -78,14 +78,14 @@ public class ClientThread implements Runnable{
                 for(int i = 0; i<numOfJobs;i++)
                     Client.resultArray.get(this.resultPos).add("RES_INIT");           
 
-                for(int j=0; j< numOfJobs;j++){
+                for(int j=0; j< numOfJobs; j++){
                     ArrayList<String> job = produceJob();
                     String jobId = Integer.toString(j);
                     StringBuilder tasks = new StringBuilder();
                     StringBuilder taskIds = new StringBuilder();
-
+                    System.out.println("JOB SIZE: " + job.size());
                     for(int i =  0; i < job.size(); i++){
-                        if(i != job.size() - 1){
+                        if(i  < job.size() - 1){
                                 tasks.append(job.get(i)).append(",");
                                 taskIds.append(i).append(",");
                         }
@@ -171,8 +171,8 @@ public class ClientThread implements Runnable{
     private ArrayList<String> produceJob(){
         ArrayList<String> job = new ArrayList<>();
         System.out.println("available tasks length: " + Client.availableTasks.length);
-        int tasks = randInt(MIN_NUM_OF_TASKS, MAX_NUM_OF_TASKS);
-        for(int i = 0; i < tasks ; i++)
+        //int tasks = randInt(MIN_NUM_OF_TASKS, MAX_NUM_OF_TASKS);
+        for (int i = 0; i < 10; i++)
             job.add(Client.availableTasks[randInt(0, Client.availableTasks.length)]);
         
         return job;

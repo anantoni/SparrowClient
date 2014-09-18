@@ -84,6 +84,6 @@ public class Client {
     private static void initTasks(){
         availableTasks = new String[MAX_AVAILABLE_BASH_TASKS];
         availableTasks[0] = "ls -al";
-        availableTasks[1] = "lss";
+        availableTasks[1] = "date";
     }
 }
