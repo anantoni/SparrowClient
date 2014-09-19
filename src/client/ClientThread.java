@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
@@ -74,8 +75,9 @@ public class ClientThread implements Runnable{
 	}
         
                 //creating jobs for http requests to scheduler
-                int numOfJobs = randInt(MIN_NUM_OF_JOBS, MAX_NUM_OF_JOBS);
-                for(int i = 0; i<numOfJobs;i++)
+                //int numOfJobs = randInt(MIN_NUM_OF_JOBS, MAX_NUM_OF_JOBS);
+                int numOfJobs = 100;
+                for(int i = 0; i<numOfJobs; i++)
                     Client.resultArray.get(this.resultPos).add("RES_INIT");           
 
                 for(int j=0; j< numOfJobs; j++){
@@ -83,7 +85,7 @@ public class ClientThread implements Runnable{
                     String jobId = Integer.toString(j);
                     StringBuilder tasks = new StringBuilder();
                     StringBuilder taskIds = new StringBuilder();
-                    System.out.println("JOB SIZE: " + job.size());
+
                     for(int i =  0; i < job.size(); i++){
                         if(i  < job.size() - 1){
                                 tasks.append(job.get(i)).append(",");
@@ -157,10 +159,12 @@ public class ClientThread implements Runnable{
     
     /*private-helper methods*/
     private Pair<String, Integer> chooseScheduler(ArrayList<Pair<String, String>> schedulers){
-         int randomScheduler = randInt(0, schedulers.size());
-         String hostname = schedulers.get(randomScheduler).getVar1();
-         int port = Integer.parseInt(schedulers.get(randomScheduler).getVar2());         
-         return new Pair<>(hostname, port);
+//         int randomScheduler = randInt(0, schedulers.size());
+//         String hostname = schedulers.get(randomScheduler).getVar1();
+//         int port = Integer.parseInt(schedulers.get(randomScheduler).getVar2());         
+        Collections.shuffle(schedulers);
+       
+         return new Pair<>(schedulers.get(0).getVar1(), Integer.parseInt(schedulers.get(0).getVar2()));
     }
     
     private String schedulerUrl(){
@@ -170,17 +174,17 @@ public class ClientThread implements Runnable{
       
     private ArrayList<String> produceJob(){
         ArrayList<String> job = new ArrayList<>();
-        System.out.println("available tasks length: " + Client.availableTasks.length);
+        //System.out.println("available tasks length: " + Client.availableTasks.length);
         //int tasks = randInt(MIN_NUM_OF_TASKS, MAX_NUM_OF_TASKS);
-        for (int i = 0; i < 10; i++)
-            job.add(Client.availableTasks[randInt(0, Client.availableTasks.length)]);
-        
+        for (int i = 0; i < 100; i++)
+            //job.add(Client.availableTasks[randInt(0, Client.availableTasks.length)]);
+            job.add("ls");
         return job;
     }
 
-    private int randInt(int min, int max) {
-        Random rand = new Random();
-        int randomNum = rand.nextInt(max - min) + min;
-        return randomNum;
-    }
+//    private int randInt(int min, int max) {
+//        Random rand = new Random();
+//        int randomNum = rand.nextInt(max - min) + min;
+//        return randomNum;
+//    }
 }
