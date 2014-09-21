@@ -67,8 +67,8 @@ public class Client {
                         int nos = Integer.parseInt(prop.getProperty("numberOfSchedulers"));
                         schedulers.add(new Pair<>( prop.getProperty("scheduler1.hostname"), 
                                                                        prop.getProperty("scheduler1.port")));
-                        schedulers.add(new Pair<>( prop.getProperty("scheduler2.hostname"), 
-                                                                       prop.getProperty("scheduler2.port")));
+//                        schedulers.add(new Pair<>( prop.getProperty("scheduler2.hostname"), 
+//                                                                       prop.getProperty("scheduler2.port")));
 	} catch (IOException ex) {
                         ex.printStackTrace();
 	} finally {

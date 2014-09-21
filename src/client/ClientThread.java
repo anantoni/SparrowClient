@@ -76,7 +76,7 @@ public class ClientThread implements Runnable{
         
                 //creating jobs for http requests to scheduler
                 //int numOfJobs = randInt(MIN_NUM_OF_JOBS, MAX_NUM_OF_JOBS);
-                int numOfJobs = 100;
+                int numOfJobs = 10;
                 for(int i = 0; i<numOfJobs; i++)
                     Client.resultArray.get(this.resultPos).add("RES_INIT");           
 
@@ -178,7 +178,7 @@ public class ClientThread implements Runnable{
         //int tasks = randInt(MIN_NUM_OF_TASKS, MAX_NUM_OF_TASKS);
         for (int i = 0; i < 100; i++)
             //job.add(Client.availableTasks[randInt(0, Client.availableTasks.length)]);
-            job.add("ls");
+            job.add("./task1.sh");
         return job;
     }
 
