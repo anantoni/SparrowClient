@@ -77,12 +77,12 @@ public class ClientThread implements Runnable{
                 //creating jobs for http requests to scheduler
                 
                 //set number of jobs
-                int numOfJobs = 10;
+                int numOfJobs = 5;
                 for(int i = 0; i<numOfJobs; i++)
                     Client.resultArray.get(this.resultPos).add("RES_INIT");           
 
                 for(int j=0; j< numOfJobs; j++){
-                    ArrayList<String> job = produceJob();
+                    ArrayList<String> job = produceJob(j);
                     String jobId = Integer.toString(j);
                     StringBuilder tasks = new StringBuilder();
                     StringBuilder taskIds = new StringBuilder();
@@ -171,18 +171,17 @@ public class ClientThread implements Runnable{
         return surl.append(this.schedulerHostname).append(":").append(this.schedulerPort).toString();
     }
       
-    private ArrayList<String> produceJob(){
+    private ArrayList<String> produceJob(int j){
         ArrayList<String> job = new ArrayList<>();
-        //System.out.println("available tasks length: " + Client.availableTasks.length);
-        //int tasks = randInt(MIN_NUM_OF_TASKS, MAX_NUM_OF_TASKS);
-        for (int i = 0; i < 10; i++) {
-            //job.add(Client.availableTasks[randInt(0, Client.availableTasks.length)]);
-            //int jobSelection = randInt(0,1);
-           /// if (jobSelection == 0)
+        //int jobSelection = randInt(0,1);
+        int jobSelection = j%2;
+        if (jobSelection == 0)
+           for (int i = 0; i < 10; i++) 
                 job.add("task1.sh");
-            //else
-           //     job.add("task2.sh");
-        }
+        else
+            for (int i = 0; i < 10; i++) 
+                job.add("task2.sh");
+        
         return job;
     }
 
