@@ -75,7 +75,8 @@ public class ClientThread implements Runnable{
 	}
         
                 //creating jobs for http requests to scheduler
-                //int numOfJobs = randInt(MIN_NUM_OF_JOBS, MAX_NUM_OF_JOBS);
+                
+                //set number of jobs
                 int numOfJobs = 10;
                 for(int i = 0; i<numOfJobs; i++)
                     Client.resultArray.get(this.resultPos).add("RES_INIT");           
@@ -153,9 +154,7 @@ public class ClientThread implements Runnable{
             catch (IOException e) {
                 System.out.println(e);
             }
-    }
-    
-    
+    }    
     
     /*private-helper methods*/
     private Pair<String, Integer> chooseScheduler(ArrayList<Pair<String, String>> schedulers){
@@ -176,15 +175,19 @@ public class ClientThread implements Runnable{
         ArrayList<String> job = new ArrayList<>();
         //System.out.println("available tasks length: " + Client.availableTasks.length);
         //int tasks = randInt(MIN_NUM_OF_TASKS, MAX_NUM_OF_TASKS);
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < 10; i++) {
             //job.add(Client.availableTasks[randInt(0, Client.availableTasks.length)]);
-            job.add("./task1.sh");
+            //int jobSelection = randInt(0,1);
+           /// if (jobSelection == 0)
+                job.add("task1.sh");
+            //else
+           //     job.add("task2.sh");
+        }
         return job;
     }
 
-//    private int randInt(int min, int max) {
-//        Random rand = new Random();
-//        int randomNum = rand.nextInt(max - min) + min;
-//        return randomNum;
-//    }
+   private int randInt(int min, int max) {
+        Random rand = new Random();
+        return  rand.nextInt((max - min) + 1) + min;
+    }
 }

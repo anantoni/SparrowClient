@@ -2,7 +2,7 @@
 
 classPath="$1"
 
-for (( i = 0; i < 20; i++))
+for (( i = 0; i < 2; i++))
 do
 
     java -jar dist/SparrowClient.jar &
