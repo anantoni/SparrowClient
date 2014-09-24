@@ -17,6 +17,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -44,15 +45,17 @@ public class ClientThread implements Runnable{
         private final String schedulerHostname;
         private final int schedulerPort;
         private final int resultPos;
+        private final int threadCounter;
         private Socket socket;
 
         /*constructor*/
-        public ClientThread(ArrayList<Pair<String, String>> schedulers, int resPos) {
+        public ClientThread(ArrayList<Pair<String, String>> schedulers, int resPos, int threadCounter) {
                 this.clientName = DEFAULT_NAME + Thread.currentThread().getId();
                 Pair<String, Integer> chosenScheduler = chooseScheduler(schedulers);
                 this.schedulerHostname = chosenScheduler.getVar1();
                 this.schedulerPort = chosenScheduler.getVar2();
                 this.resultPos = resPos;
+                this.threadCounter = threadCounter;
         }
     
         /*interface methods*/
@@ -82,7 +85,7 @@ public class ClientThread implements Runnable{
                     Client.resultArray.get(this.resultPos).add("RES_INIT");           
 
                 for(int j=0; j< numOfJobs; j++){
-                    ArrayList<String> job = produceJob(j);
+                    ArrayList<String> job = produceJob(threadCounter);
                     String jobId = Integer.toString(j);
                     StringBuilder tasks = new StringBuilder();
                     StringBuilder taskIds = new StringBuilder();
@@ -102,6 +105,7 @@ public class ClientThread implements Runnable{
                     CloseableHttpClient httpclient = HttpClients.createDefault();
                     try {
                         HttpPost httpPost = new HttpPost(schedulerUrl());
+                        httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
                         List <NameValuePair> nvps = new ArrayList <>();
                         nvps.add(new BasicNameValuePair("job-id", jobId));
                         nvps.add(new BasicNameValuePair("task-commands", tasks.toString()));

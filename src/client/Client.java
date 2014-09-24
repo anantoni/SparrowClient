@@ -32,22 +32,21 @@ public class Client {
         initTasks();
         ArrayList<Pair<String, String>> schedulers = loadSchedulers();
         ///////////        int numberOfClientThreads = Integer.parseInt(args[0]);
-        int numberOfClientThreads = 2;
+        int numberOfClientThreads = 4;
 
         resultArray = new ArrayList<>();
-        for(int i = 0; i<numberOfClientThreads ; i++)
-                resultArray.add(new ArrayList<>());
+        for(int i = 0; i < numberOfClientThreads ; i++)
+            resultArray.add(new ArrayList<>());
 
         ExecutorService executor = Executors.newFixedThreadPool(MAX_PARALLEL_CLIENTS);
-
+        	
         for (int i = 0; i < numberOfClientThreads; i++) {
-                Runnable worker = new ClientThread(schedulers, i);
-                executor.execute(worker);
+            Runnable worker = new ClientThread(schedulers, i, i);
+            executor.execute(worker);
         }
-
-        executor.shutdown();
-
-        while (!executor.isTerminated()) {}	
+        
+         executor.shutdown();
+        while (!executor.isTerminated()) {}
     }    
 
     private static ArrayList<Pair<String, String>> loadSchedulers(){        
