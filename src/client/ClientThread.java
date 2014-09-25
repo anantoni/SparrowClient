@@ -72,53 +72,29 @@ public class ClientThread implements Runnable{
 	    System.exit(ERROR);
 	}
         
-                //creating jobs for http requests to scheduler
                 
                 //set number of jobs
-                int numOfJobs = 1000;
-//                for(int i = 0; i<numOfJobs; i++)
-//                    Client.resultArray.get(this.resultPos).add("RES_INIT");           
+                int numOfJobs = 50;
                 ExponentialDistribution ed = new ExponentialDistribution(100);
+                
+                
+                
                 for(int j=0; j< numOfJobs; j++){
-                     //ed.sample();
-
-                    //ArrayList<String> job = produceJob(threadCounter);
-                    ArrayList<String> job = exponentialProduceJob(ed);
-                    String jobId = Integer.toString(j);
-                    StringBuilder tasks = new StringBuilder();
-                    StringBuilder taskIds = new StringBuilder();
-
-                    for(int i =  0; i < job.size(); i++){
-                        if(i  < job.size() - 1){
-                                tasks.append(job.get(i)).append(",");
-                                taskIds.append(i).append(",");
-                        }
-                        else{
-                                tasks.append(job.get(i));
-                                taskIds.append(i);
-                        }
-                    }
-
+                    
                     //http request     
                     CloseableHttpClient httpclient = HttpClients.createDefault();
                     try {
                         HttpPost httpPost = new HttpPost(schedulerUrl());
                         httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
                         List <NameValuePair> nvps = new ArrayList <>();
-                        nvps.add(new BasicNameValuePair("job-id", jobId));
-                        nvps.add(new BasicNameValuePair("task-commands", tasks.toString()));
-                        nvps.add(new BasicNameValuePair("task-ids", taskIds.toString()));
-
+                        nvps.add(new BasicNameValuePair("task-duration", String.valueOf(exponentialProduceTaskDuration(ed))));
+                        nvps.add(new BasicNameValuePair("task-quantity", String.valueOf(10)));
                         httpPost.setEntity(new UrlEncodedFormEntity(nvps));
                         System.out.println("sending task request");
                         CloseableHttpResponse response = httpclient.execute(httpPost);
                         try {
                             System.out.println(response.getStatusLine());
                             HttpEntity entity2 = response.getEntity();
-                            // do something useful with the response body
-                            // and ensure it is fully consumed
-
-                            // TODO: add result to Client.resultArray.get(this.resultPos).get(j).set(`result from response message :)) `)//
                             EntityUtils.consume(entity2);
                         }   
                         catch (IOException ex) {
@@ -158,6 +134,10 @@ public class ClientThread implements Runnable{
             }
     }    
     
+    private int exponentialProduceTaskDuration(ExponentialDistribution ed) {
+        return (int)ed.sample();
+    }
+        
     /*private-helper methods*/
     private Pair<String, Integer> chooseScheduler(ArrayList<Pair<String, String>> schedulers){       
         Collections.shuffle(schedulers);
@@ -188,14 +168,7 @@ public class ClientThread implements Runnable{
 //        return job;
 //    }
     
-    private ArrayList<String> exponentialProduceJob(ExponentialDistribution ed) {
-        double task_duration = ed.sample();
-        ArrayList<String> job = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            job.add("task5.sh " + task_duration);
-        }
-        return job;
-    }
+   
 
    private int randInt(int min, int max) {
         Random rand = new Random();
