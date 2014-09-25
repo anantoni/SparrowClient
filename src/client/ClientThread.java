@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.math3.distribution.ExponentialDistribution;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
@@ -74,12 +75,15 @@ public class ClientThread implements Runnable{
                 //creating jobs for http requests to scheduler
                 
                 //set number of jobs
-                int numOfJobs = 10;
+                int numOfJobs = 1000;
 //                for(int i = 0; i<numOfJobs; i++)
 //                    Client.resultArray.get(this.resultPos).add("RES_INIT");           
-
+                ExponentialDistribution ed = new ExponentialDistribution(100);
                 for(int j=0; j< numOfJobs; j++){
-                    ArrayList<String> job = produceJob(threadCounter);
+                     //ed.sample();
+
+                    //ArrayList<String> job = produceJob(threadCounter);
+                    ArrayList<String> job = exponentialProduceJob(ed);
                     String jobId = Integer.toString(j);
                     StringBuilder tasks = new StringBuilder();
                     StringBuilder taskIds = new StringBuilder();
@@ -155,10 +159,7 @@ public class ClientThread implements Runnable{
     }    
     
     /*private-helper methods*/
-    private Pair<String, Integer> chooseScheduler(ArrayList<Pair<String, String>> schedulers){
-//         int randomScheduler = randInt(0, schedulers.size());
-//         String hostname = schedulers.get(randomScheduler).getVar1();
-//         int port = Integer.parseInt(schedulers.get(randomScheduler).getVar2());         
+    private Pair<String, Integer> chooseScheduler(ArrayList<Pair<String, String>> schedulers){       
         Collections.shuffle(schedulers);
        
          return new Pair<>(schedulers.get(0).getVar1(), Integer.parseInt(schedulers.get(0).getVar2()));
@@ -169,20 +170,29 @@ public class ClientThread implements Runnable{
         return surl.append(this.schedulerHostname).append(":").append(this.schedulerPort).toString();
     }
       
-    private ArrayList<String> produceJob(int j){
+//    private ArrayList<String> produceJob(int j){
+//        ArrayList<String> job = new ArrayList<>();
+//        int jobSelection = randInt(0,1);
+//        int jobSelection = j%2;
+//        if (jobSelection == 0)
+//           for (int i = 0; i < 10; i++) 
+//                job.add("task3.sh");
+//        else {
+//            if (threadCounter % 3 == 1)
+//                for (int i = 0; i < 100; i++) 
+//                    job.add("task4.sh");
+//            else 
+//                for (int i = 0; i < 10; i++)
+//                    job.add("task1.sh");
+//        }
+//        return job;
+//    }
+    
+    private ArrayList<String> exponentialProduceJob(ExponentialDistribution ed) {
+        double task_duration = ed.sample();
         ArrayList<String> job = new ArrayList<>();
-        //int jobSelection = randInt(0,1);
-        int jobSelection = j%2;
-        if (jobSelection == 0)
-           for (int i = 0; i < 10; i++) 
-                job.add("task3.sh");
-        else {
-            if (threadCounter % 3 == 1)
-                for (int i = 0; i < 100; i++) 
-                    job.add("task4.sh");
-            else 
-                for (int i = 0; i < 10; i++)
-                    job.add("task1.sh");
+        for (int i = 0; i < 10; i++) {
+            job.add("task5.sh " + task_duration);
         }
         return job;
     }
