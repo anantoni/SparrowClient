@@ -35,12 +35,6 @@ import utilities.structs.Pair;
 public class ClientThread implements Runnable{
         private static final String DEFAULT_NAME = "CLIENT:";
         private static final int ERROR = 1;
-        private static final int MAX_NUM_OF_TASKS = 20;
-        private static final int MIN_NUM_OF_TASKS = 10;
-        private static final int MAX_NUM_OF_JOBS = 100;
-        private static final int MIN_NUM_OF_JOBS = 1;
-
-
         private final String clientName; 
         private final String schedulerHostname;
         private final int schedulerPort;
@@ -80,9 +74,9 @@ public class ClientThread implements Runnable{
                 //creating jobs for http requests to scheduler
                 
                 //set number of jobs
-                int numOfJobs = 1000;
-                for(int i = 0; i<numOfJobs; i++)
-                    Client.resultArray.get(this.resultPos).add("RES_INIT");           
+                int numOfJobs = 10;
+//                for(int i = 0; i<numOfJobs; i++)
+//                    Client.resultArray.get(this.resultPos).add("RES_INIT");           
 
                 for(int j=0; j< numOfJobs; j++){
                     ArrayList<String> job = produceJob(threadCounter);
@@ -180,12 +174,16 @@ public class ClientThread implements Runnable{
         //int jobSelection = randInt(0,1);
         int jobSelection = j%2;
         if (jobSelection == 0)
-           for (int i = 0; i < 100; i++) 
+           for (int i = 0; i < 10; i++) 
                 job.add("task3.sh");
-        else
-            for (int i = 0; i < 100; i++) 
-                job.add("task4.sh");
-        
+        else {
+            if (threadCounter % 3 == 1)
+                for (int i = 0; i < 100; i++) 
+                    job.add("task4.sh");
+            else 
+                for (int i = 0; i < 10; i++)
+                    job.add("task1.sh");
+        }
         return job;
     }
 
