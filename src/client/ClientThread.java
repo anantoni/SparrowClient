@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.ws.spi.http.HttpContext;
 import org.apache.commons.math3.distribution.ExponentialDistribution;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpVersion;
@@ -21,6 +22,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -33,16 +35,19 @@ import utilities.structs.Pair;
 public class ClientThread implements Runnable{
         private final String schedulerHostname;
         private final int schedulerPort;
-        private final CloseableHttpClient httpclient;
+        private final CloseableHttpClient httpClient;
+        private final HttpClientContext context;
+        
         /*constructor*/
         public ClientThread(CloseableHttpClient httpclient, 
                             ArrayList<Pair<String, String>> schedulers, 
                             int resPos, int threadCounter) {
             
-                this.httpclient = httpclient;
+                this.httpClient = httpclient;
                 Pair<String, Integer> chosenScheduler = chooseScheduler(schedulers);
                 this.schedulerHostname = chosenScheduler.getVar1();
                 this.schedulerPort = chosenScheduler.getVar2();
+                this.context = HttpClientContext.create();
         }
     
         /*interface methods*/
@@ -62,7 +67,7 @@ public class ClientThread implements Runnable{
                         nvps.add(new BasicNameValuePair("task-duration", String.valueOf(exponentialProduceTaskDuration(ed))));
                         nvps.add(new BasicNameValuePair("task-quantity", String.valueOf(10)));
                         httpPost.setEntity(new UrlEncodedFormEntity(nvps));
-                        CloseableHttpResponse response = httpclient.execute(httpPost);
+                        CloseableHttpResponse response = httpClient.execute(httpPost, context);
                         try {
                             HttpEntity entity2 = response.getEntity();
                             EntityUtils.consume(entity2);

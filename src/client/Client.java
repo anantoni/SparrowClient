@@ -9,12 +9,8 @@ package client;
 /**
  *
  * @author jim
+ * @refactoring anantoni
  */
-// tcpClient.java by fpont 3/2000
-
-// usage : java tcpClient <server> <port>
-// default port is 1500
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Properties;
