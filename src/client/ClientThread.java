@@ -34,56 +34,31 @@ import utilities.structs.Pair;
  * @author jim
  */
 public class ClientThread implements Runnable{
-        private static final String DEFAULT_NAME = "CLIENT:";
         private static final int ERROR = 1;
-        private final String clientName; 
         private final String schedulerHostname;
         private final int schedulerPort;
-        private final int resultPos;
-        private final int threadCounter;
         private Socket socket;
 
         /*constructor*/
         public ClientThread(ArrayList<Pair<String, String>> schedulers, int resPos, int threadCounter) {
-                this.clientName = DEFAULT_NAME + Thread.currentThread().getId();
                 Pair<String, Integer> chosenScheduler = chooseScheduler(schedulers);
                 this.schedulerHostname = chosenScheduler.getVar1();
                 this.schedulerPort = chosenScheduler.getVar2();
-                this.resultPos = resPos;
-                this.threadCounter = threadCounter;
         }
     
         /*interface methods*/
         @Override
-        public void run() {
-        // connect to server
-	try {
-	    this.socket = new Socket(this.schedulerHostname, this.schedulerPort);
-	    System.out.println("Connected with scheduler " +
-				   this.socket.getInetAddress() +
-				   ":" + this.socket.getPort());
-	}
-	catch (UnknownHostException e) {
-	    System.out.println(e);
-	    System.exit(ERROR);
-	}
-	catch (IOException e) {
-	    System.out.println(e);
-	    System.exit(ERROR);
-	}
-        
-                
+        public void run() {        
                 //set number of jobs
-                int numOfJobs = 50;
+                int numOfJobs = 5000;
                 ExponentialDistribution ed = new ExponentialDistribution(100);
                 
                 
-                
                 for(int j=0; j< numOfJobs; j++){
-                    
-                    //http request     
                     CloseableHttpClient httpclient = HttpClients.createDefault();
+                    //http request     
                     try {
+                        
                         HttpPost httpPost = new HttpPost(schedulerUrl());
                         httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
                         List <NameValuePair> nvps = new ArrayList <>();
@@ -124,14 +99,6 @@ public class ClientThread implements Runnable{
                         }
                     }       
             }
-
-            //closing socket...
-            try {
-                socket.close();
-            }
-            catch (IOException e) {
-                System.out.println(e);
-            }
     }    
     
     private int exponentialProduceTaskDuration(ExponentialDistribution ed) {
@@ -149,8 +116,14 @@ public class ClientThread implements Runnable{
         StringBuilder surl = new StringBuilder("http://");
         return surl.append(this.schedulerHostname).append(":").append(this.schedulerPort).toString();
     }
-      
-//    private ArrayList<String> produceJob(int j){
+   
+
+   private int randInt(int min, int max) {
+        Random rand = new Random();
+        return  rand.nextInt((max - min) + 1) + min;
+    }
+   
+   //    private ArrayList<String> produceJob(int j){
 //        ArrayList<String> job = new ArrayList<>();
 //        int jobSelection = randInt(0,1);
 //        int jobSelection = j%2;
@@ -167,11 +140,4 @@ public class ClientThread implements Runnable{
 //        }
 //        return job;
 //    }
-    
-   
-
-   private int randInt(int min, int max) {
-        Random rand = new Random();
-        return  rand.nextInt((max - min) + 1) + min;
-    }
 }

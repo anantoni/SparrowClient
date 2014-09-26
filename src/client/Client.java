@@ -31,12 +31,7 @@ public class Client {
     public static void main(String[] args) {
         initTasks();
         ArrayList<Pair<String, String>> schedulers = loadSchedulers();
-        ///////////        int numberOfClientThreads = Integer.parseInt(args[0]);
         int numberOfClientThreads = 4;
-
-//        resultArray = new ArrayList<>();
-//        for(int i = 0; i < numberOfClientThreads ; i++)
-//            resultArray.add(new ArrayList<>());
 
         ExecutorService executor = Executors.newFixedThreadPool(4);
         	
@@ -63,7 +58,6 @@ public class Client {
             prop.load(input);
 
             // get the property value and print it out
-            int nos = Integer.parseInt(prop.getProperty("numberOfSchedulers"));
             schedulers.add(new Pair<>( prop.getProperty("scheduler1.hostname"), 
                                                            prop.getProperty("scheduler1.port")));
             //schedulers.add(new Pair<>( prop.getProperty("scheduler2.hostname"), 
