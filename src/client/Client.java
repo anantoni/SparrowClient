@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.math3.distribution.ExponentialDistribution;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -29,8 +30,9 @@ public class Client {
     public static String[] availableTasks;
 
     public static void main(String[] args) {
+        ExponentialDistribution ed = new ExponentialDistribution(100);
         ArrayList<Pair<String, String>> schedulers = loadSchedulers();
-        int numberOfClientThreads = 4;
+        int numberOfClientThreads = 4;         
 
         PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
         CloseableHttpClient httpClient = HttpClients.custom()
@@ -40,7 +42,7 @@ public class Client {
         ExecutorService executor = Executors.newFixedThreadPool(4);
         
         for (int i = 0; i < numberOfClientThreads; i++) {
-            Runnable worker = new ClientThread(httpClient, schedulers, i, i);
+            Runnable worker = new ClientThread(httpClient, schedulers, i, i, ed);
             executor.execute(worker);
         }
         

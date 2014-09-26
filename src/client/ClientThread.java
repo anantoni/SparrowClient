@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.ws.spi.http.HttpContext;
 import org.apache.commons.math3.distribution.ExponentialDistribution;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpVersion;
@@ -37,17 +36,19 @@ public class ClientThread implements Runnable{
         private final int schedulerPort;
         private final CloseableHttpClient httpClient;
         private final HttpClientContext context;
+        private final ExponentialDistribution ed;
         
         /*constructor*/
         public ClientThread(CloseableHttpClient httpclient, 
                             ArrayList<Pair<String, String>> schedulers, 
-                            int resPos, int threadCounter) {
+                            int resPos, int threadCounter, ExponentialDistribution ed) {
             
                 this.httpClient = httpclient;
                 Pair<String, Integer> chosenScheduler = chooseScheduler(schedulers);
                 this.schedulerHostname = chosenScheduler.getVar1();
                 this.schedulerPort = chosenScheduler.getVar2();
                 this.context = HttpClientContext.create();
+                this.ed = ed;
         }
     
         /*interface methods*/
@@ -55,13 +56,10 @@ public class ClientThread implements Runnable{
         public void run() {        
                 //set number of jobs
                 int numOfJobs = 5000;
-                ExponentialDistribution ed = new ExponentialDistribution(100);
                 
                 HttpPost httpPost = new HttpPost(schedulerUrl());
                 httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
                 for(int j=0; j< numOfJobs; j++){
-                    //CloseableHttpClient httpclient = HttpClients.createDefault();
-                    //http request     
                     try {
                         List <NameValuePair> nvps = new ArrayList <>();
                         nvps.add(new BasicNameValuePair("task-duration", String.valueOf(exponentialProduceTaskDuration(ed))));
