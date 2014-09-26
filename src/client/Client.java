@@ -20,28 +20,42 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import utilities.structs.Pair;
 
 public class Client {
     public static int MAX_PARALLEL_CLIENTS = 50;
-    private static final int MAX_AVAILABLE_BASH_TASKS = 2;
     public static ArrayList<ArrayList<String>> resultArray;
     public static String[] availableTasks;
 
     public static void main(String[] args) {
-        initTasks();
         ArrayList<Pair<String, String>> schedulers = loadSchedulers();
         int numberOfClientThreads = 4;
 
+        PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+        CloseableHttpClient httpClient = HttpClients.custom()
+        .setConnectionManager(cm)
+        .build();
+	
         ExecutorService executor = Executors.newFixedThreadPool(4);
-        	
+        
         for (int i = 0; i < numberOfClientThreads; i++) {
-            Runnable worker = new ClientThread(schedulers, i, i);
+            Runnable worker = new ClientThread(httpClient, schedulers, i, i);
             executor.execute(worker);
         }
         
         executor.shutdown();
         while (!executor.isTerminated()) {}
+        try {
+            httpClient.close();
+        } 
+        catch (IOException ex) {
+            Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }    
 
     private static ArrayList<Pair<String, String>> loadSchedulers(){        
@@ -75,11 +89,5 @@ public class Client {
         }
 
         return schedulers;
-    }
-
-    private static void initTasks(){
-        availableTasks = new String[MAX_AVAILABLE_BASH_TASKS];
-        availableTasks[0] = "ls -al";
-        availableTasks[1] = "date";
     }
 }

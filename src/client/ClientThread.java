@@ -8,8 +8,6 @@ package client;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +22,6 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import utilities.structs.Pair;
@@ -34,13 +31,15 @@ import utilities.structs.Pair;
  * @author jim
  */
 public class ClientThread implements Runnable{
-        private static final int ERROR = 1;
         private final String schedulerHostname;
         private final int schedulerPort;
-        private Socket socket;
-
+        private final CloseableHttpClient httpclient;
         /*constructor*/
-        public ClientThread(ArrayList<Pair<String, String>> schedulers, int resPos, int threadCounter) {
+        public ClientThread(CloseableHttpClient httpclient, 
+                            ArrayList<Pair<String, String>> schedulers, 
+                            int resPos, int threadCounter) {
+            
+                this.httpclient = httpclient;
                 Pair<String, Integer> chosenScheduler = chooseScheduler(schedulers);
                 this.schedulerHostname = chosenScheduler.getVar1();
                 this.schedulerPort = chosenScheduler.getVar2();
@@ -53,22 +52,18 @@ public class ClientThread implements Runnable{
                 int numOfJobs = 5000;
                 ExponentialDistribution ed = new ExponentialDistribution(100);
                 
-                
+                HttpPost httpPost = new HttpPost(schedulerUrl());
+                httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
                 for(int j=0; j< numOfJobs; j++){
-                    CloseableHttpClient httpclient = HttpClients.createDefault();
+                    //CloseableHttpClient httpclient = HttpClients.createDefault();
                     //http request     
                     try {
-                        
-                        HttpPost httpPost = new HttpPost(schedulerUrl());
-                        httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
                         List <NameValuePair> nvps = new ArrayList <>();
                         nvps.add(new BasicNameValuePair("task-duration", String.valueOf(exponentialProduceTaskDuration(ed))));
                         nvps.add(new BasicNameValuePair("task-quantity", String.valueOf(10)));
                         httpPost.setEntity(new UrlEncodedFormEntity(nvps));
-                        System.out.println("sending task request");
                         CloseableHttpResponse response = httpclient.execute(httpPost);
                         try {
-                            System.out.println(response.getStatusLine());
                             HttpEntity entity2 = response.getEntity();
                             EntityUtils.consume(entity2);
                         }   
@@ -89,15 +84,7 @@ public class ClientThread implements Runnable{
                     } 
                     catch (IOException ex) {
                             Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
-                    } 
-                    finally {
-                        try {
-                            httpclient.close();
-                        } 
-                        catch (IOException ex) {
-                            Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }       
+                    }      
             }
     }    
     
