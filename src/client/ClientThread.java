@@ -73,14 +73,14 @@ public class ClientThread implements Runnable{
                             EntityUtils.consume(entity2);
                         }   
                         catch (IOException ex) {
-                                Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+                            Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
                         } 
                         finally {
                             try {
-                                    response.close();
+                                response.close();
                             } 
                             catch (IOException ex) {
-                                    Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+                                Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
                     }   
