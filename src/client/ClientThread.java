@@ -15,6 +15,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.math3.distribution.ExponentialDistribution;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
@@ -54,41 +55,44 @@ public class ClientThread implements Runnable{
         /*interface methods*/
         @Override
         public void run() {        
-                //set number of jobs
-                int numOfJobs = 5000;
-                
-                HttpPost httpPost = new HttpPost(schedulerUrl());
-                httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
-                for(int j=0; j< numOfJobs; j++){
+            //set number of jobs
+            int numOfJobs = 5000;
+
+            HttpPost httpPost = new HttpPost(schedulerUrl());
+            httpPost.setProtocolVersion(HttpVersion.HTTP_1_1);
+            for(int j=0; j< numOfJobs; j++){
+                try {
+                    List <NameValuePair> nvps = new ArrayList <>();
+                    nvps.add(new BasicNameValuePair("task-duration", String.valueOf(exponentialProduceTaskDuration(ed))));
+                    nvps.add(new BasicNameValuePair("task-quantity", String.valueOf(10)));
+                    httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+                    CloseableHttpResponse response = httpClient.execute(httpPost, context);
                     try {
-                        List <NameValuePair> nvps = new ArrayList <>();
-                        nvps.add(new BasicNameValuePair("task-duration", String.valueOf(exponentialProduceTaskDuration(ed))));
-                        nvps.add(new BasicNameValuePair("task-quantity", String.valueOf(10)));
-                        httpPost.setEntity(new UrlEncodedFormEntity(nvps));
-                        CloseableHttpResponse response = httpClient.execute(httpPost, context);
+                        HttpEntity entity2 = response.getEntity();
+                        EntityUtils.consume(entity2);
+                    }   
+                    catch (IOException ex) {
+                        Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+                    } 
+                    finally {
                         try {
-                            HttpEntity entity2 = response.getEntity();
-                            EntityUtils.consume(entity2);
-                        }   
+                            response.close();
+                        } 
                         catch (IOException ex) {
                             Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
-                        } 
-                        finally {
-                            try {
-                                response.close();
-                            } 
-                            catch (IOException ex) {
-                                Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
-                            }
                         }
-                    }   
-                    catch (UnsupportedEncodingException ex) {
-                            Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
-                    } 
-                    catch (IOException ex) {
-                            Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
-                    }      
-            }
+                    }
+                }   
+                catch (UnsupportedEncodingException ex) {
+                        Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+                } 
+                catch (IOException ex) {
+                        Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+                } 
+                finally {
+                    httpPost.releaseConnection();
+                }
+       }
     }    
     
     private int exponentialProduceTaskDuration(ExponentialDistribution ed) {
