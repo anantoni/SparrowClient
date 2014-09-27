@@ -15,7 +15,6 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.math3.distribution.ExponentialDistribution;
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
@@ -116,22 +115,4 @@ public class ClientThread implements Runnable{
         Random rand = new Random();
         return  rand.nextInt((max - min) + 1) + min;
     }
-   
-   //    private ArrayList<String> produceJob(int j){
-//        ArrayList<String> job = new ArrayList<>();
-//        int jobSelection = randInt(0,1);
-//        int jobSelection = j%2;
-//        if (jobSelection == 0)
-//           for (int i = 0; i < 10; i++) 
-//                job.add("task3.sh");
-//        else {
-//            if (threadCounter % 3 == 1)
-//                for (int i = 0; i < 100; i++) 
-//                    job.add("task4.sh");
-//            else 
-//                for (int i = 0; i < 10; i++)
-//                    job.add("task1.sh");
-//        }
-//        return job;
-//    }
 }

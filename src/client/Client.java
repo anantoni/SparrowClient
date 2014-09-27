@@ -18,25 +18,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.ws.spi.http.HttpContext;
 import org.apache.commons.math3.distribution.ExponentialDistribution;
-import org.apache.http.HeaderElement;
-import org.apache.http.HeaderElementIterator;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import static org.apache.http.HttpVersion.HTTP;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.config.SocketConfig;
-import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.message.BasicHeaderElementIterator;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
 import utilities.structs.Pair;
 
 public class Client {
@@ -50,28 +35,8 @@ public class Client {
         int numberOfClientThreads = 4;         
 
         PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-        //HttpClients.custom().set
         CloseableHttpClient httpClient = HttpClients.custom().setConnectionManager(cm).build();
                   
-//        SocketConfig socketConfig = SocketConfig.custom().setTcpNoDelay(true)
-//                                                                                        .setSoKeepAlive(true)
-//                                                                                        .setSoReuseAddress(true)
-//                                                                                        .build();
-//        cm.setDefaultSocketConfig(socketConfig);
-//        ConnectionKeepAliveStrategy keepAliveStrat = new DefaultConnectionKeepAliveStrategy() {
-//            @Override
-//            public long getKeepAliveDuration(HttpResponse response, HttpContext context) {
-//                long keepAlive = super.getKeepAliveDuration(response, (org.apache.http.protocol.HttpContext) context);
-//                if (keepAlive == -1) {
-//                    // Keep connections alive 5 seconds if a keep-alive value
-//                    // has not be explicitly set by the server
-//                    keepAlive = 5000;
-//                }
-//            return keepAlive;
-//            }
-//        };
-
-	
         ExecutorService executor = Executors.newFixedThreadPool(4);
         
         for (int i = 0; i < numberOfClientThreads; i++) {
