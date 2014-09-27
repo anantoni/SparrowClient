@@ -32,7 +32,7 @@ public class Client {
     public static void main(String[] args) {
         ExponentialDistribution ed = new ExponentialDistribution(100);
         ArrayList<Pair<String, String>> schedulers = loadSchedulers();
-        int numberOfClientThreads = 4;         
+        int numberOfClientThreads = 2;         
 
         PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
         CloseableHttpClient httpClient = HttpClients.custom().setConnectionManager(cm).build();
