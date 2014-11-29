@@ -9,7 +9,7 @@ package client;
 /**
  *
  * @author jim
- * @refactoring anantoni
+ * @author anantoni
  */
 import java.io.*;
 import java.util.ArrayList;
